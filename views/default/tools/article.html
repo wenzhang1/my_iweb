@@ -1,0 +1,60 @@
+<div class="box">
+   <div class="title">
+      <h5>文章列表</h5>
+      <ul class="links">
+         <li><a href="{url:/tools/article_edit}">添加新文章</a></li>
+      </ul>
+   </div>
+   <form action="{url:/tools/article_del}" method="post">
+      <div class="table">
+         <table>
+            <col width="45%" />
+            <col width="23%" />
+            <col width="10%" />
+            <col />
+            <col width="5%" />
+            <thead>
+               <tr>
+                  <th class="left">文章标题</th>
+                  <th>创建时间</th>
+                  <th>对应分类</th>
+                  <th>操作</th>
+                  <th class="last">
+                     <input type="checkbox" class="checkall" />
+                  </th>
+               </tr>
+            </thead>
+            <tbody>
+               {set:$page= (isset($_GET['page'])&&(intval($_GET['page'])>0))?intval($_GET['page']):1;}
+               {query: name = article as a
+                       join = left join article_catergory as ac ON ac.id eq a.catergory_id
+                       fields = a.title as a_title, a.create_time as a_create_time, ac.name as ac_name, a.id as a_id
+                       order = create_time DESC
+                       page=$page
+                       pagesize=10
+               }
+               <tr>
+                  <td class="title"><b>{$item['a_title']}</b></td>
+                  <td class="date">{$item['a_create_time']}</td>
+                  <td class="category">{$item['ac_name']}</td>
+                  <td class="operation">
+                     <a href="{url:/tools/article_edit/id/$item[a_id]}">编辑文章</a>
+                     <a href="javascript:void(0)" onclick="delModel({link:'{url:/tools/article_del/id/$item[a_id]}'})">删除文章</a>
+                  </td>
+                  <td class="last">
+                     <input type="checkbox" name='id[]' value="{$item['a_id']}" />
+                  </td>
+               </tr>
+               {/query}
+            </tbody>
+         </table>
+         <div class="pagination pagination-left">
+            <div class="results"><span>{$query->getTotalPage()}</span></div>
+            <ul class="pager">{$query->getPageBar()}</ul>
+         </div>
+         <div class="action">
+              <div class="button"><input type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-state-focus" value="批量删除" onclick="delModel();" /></div>
+         </div>
+      </div>
+   </form>
+</div>

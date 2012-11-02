@@ -1,0 +1,237 @@
+{set:$siteConfig = new Config("site_config");$siteConfig = $siteConfig->getInfo();}
+{set:$admin_name = $this->admin['admin_name']}
+{set:$admin_pwd = $this->admin['admin_pwd']}
+<script type='text/javascript' src="{theme:javascript/swfupload.js}"></script>
+<script type="text/javascript" src="{theme:javascript/fileprogress.js}"></script>
+<script type='text/javascript' src="{theme:javascript/swfupload.queue.js}"></script>
+<script type="text/javascript" src="{theme:javascript/handlers.js}"></script>
+<script type="text/javascript">
+	var swfu;
+	window.onload = function () {
+		swfu = new SWFUpload({
+			// Settings
+			upload_url: "{url:/tools/img_upload/admin_name/$admin_name/admin_pwd/$admin_pwd}",
+			post_params: {"PHPSESSID": "NONE"},
+
+			file_size_limit : "2 MB",	// 2MB
+			file_types : "*.jpg;*.jpge;*.png;*.gif",
+			file_types_description : "JPG Images",
+			file_upload_limit : "0",
+			file_queue_error_handler : fileQueueError,
+			file_dialog_complete_handler : fileDialogComplete,
+			upload_progress_handler : uploadProgress,
+			upload_error_handler : uploadError,
+			upload_success_handler : uploadSuccess,
+			upload_complete_handler : uploadComplete,
+
+			// Button Settings
+			button_placeholder_id : "file",
+			button_width: 50,
+			button_height: 21,
+			button_text : '',
+			button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
+			button_cursor: SWFUpload.CURSOR.HAND,
+
+			// Flash Settings
+			flash_url : "{theme:javascript/swfupload.swf}",
+
+			custom_settings : {
+				upload_target : "show"
+			},
+			// Debug Settings
+			debug: false
+		});
+	};
+	
+	function focus_img(little,obj)
+	{
+		$('#focus_photo').val(little);
+		$("img[name='img_name']").removeClass('current');
+		$(obj).parent().find('img').addClass('current');
+	}
+	
+	function del_img(id)
+	{
+		//删除数组元素.
+		Array.prototype.remove=function(dx)
+		{
+		    if(isNaN(dx)||dx>this.length){return false;}
+		    for(var i=0,n=0;i<this.length;i++)
+		    {
+		        if(this[i]!=this[dx])
+		        {
+		            this[n++]=this[i]
+		        }
+		    }
+		    this.length-=1
+		}
+		//在数组中获取指定值的元素索引
+		Array.prototype.getIndexByValue= function(value)
+		{
+		    var index = -1;
+		    for (var i = 0; i < this.length; i++)
+		    {
+		        if (this[i] == value)
+		        {
+		            index = i;
+		            break;
+		        }
+		    }
+		    return index;
+		}
+		
+		var photo_name = $('#photo_name').val();
+		photo_name = photo_name.substring(0,photo_name.length-1);
+		var arr = photo_name.split(',');
+		var key = 0;
+		for(var i=0;i<arr.length;i++){
+			if(arr[i].indexOf(id)>0){
+				key = i;
+			}
+		}
+		
+		var del_photo = $('#del_photo').val();
+		del_photo += arr[key] + ',';
+		$('#del_photo').val(del_photo);
+		arr.remove(key);
+		if(arr.length>0)
+		{
+			//如果没有全部删除则不为空
+			$('#photo_name').val(arr.join(',')+',');
+			$("#a"+id).remove();
+			var focus_photo = $('#focus_photo').val();
+			if(focus_photo.indexOf(id)>0)
+			{
+				var photo_ar = arr.join(',');
+				if(photo_ar!='')
+				{
+					p_arr = photo_ar.split(',');
+					var head = p_arr[0].substring(0,p_arr[0].indexOf('.'));
+					var footer = p_arr[0].substring(p_arr[0].indexOf('.'));
+					var thumb = $('#thumb').val();
+					$('#focus_photo').val(head+footer);
+					$('#show_list img').each(function(){
+						var src = $(this).attr("src");
+						if(src.indexOf(head+thumb+footer)>0 || src.indexOf(head+thumb+footer) == 0)
+						{
+							$(this).addClass('current');
+							return;
+						}
+					});
+				}
+			}
+		}else{
+			//如果图片全部删除则值为空
+			$('#photo_name').val("");
+			$('#focus_photo').val("");
+			$("#a"+id).remove();
+		}
+	}
+</script>
+
+
+<div class="box">
+   {set:$id = IReq::get('id')}
+   <div class="title">
+      <h5>{if:isset($this->photoRow[0]['category_id'])}相册查看{else:}相册图片上传{/if}</h5>
+   </div>
+   <div class="form">
+      <form action="{url:/tools/photo_upload_act}" method="post">
+		 {if:isset($this->photoRow)}
+         <div class="fields">
+           <div class="field">
+              <div class="label"><label>相册：</label></div>
+              <div class="input">
+              	<input type="hidden" name="category_id" value="{$this->photoRow[0]['category_id']}" />
+              	{set:$category_id = $this->photoRow[0]['category_id']}
+              	{query:name = photo_category
+              			where = id eq $category_id
+              		}
+              	<input type="text" id="input-small" class="small" disabled="disabled" value="{$item['name']}" />
+              	{/query}
+              </div>
+           </div>
+           <div class="field">
+              <div class="label"><em></em>
+                 <label for="title">上传图片：</label>  
+              </div>
+			  <div class="input input-file">
+			  	<input type="hidden" name="photo_name" id="photo_name" value="{$this->photoRow[0]['photo_name']}"/>
+			  	<input type="hidden" name="focus_photo" id="focus_photo" value="{$this->photoRow[0]['focus_photo']}"/>
+				<input type="hidden" name="thumb" id="thumb" value="_100_100"/>
+		      	<input type="hidden" name="id" id="id" value="{$this->photoRow[0]['category_id']}"/>
+				<input type="hidden" name="del_photo" id="del_photo" value="" />
+		      	<input type="file" id="file" name="file" size="40" />
+			  </div>
+			  <div class="show_title">
+				<div id="show"></div>
+			  </div>
+			  <div class="show_box">
+				<div id="show_list">
+				   {set:$photoData = $this->photoRow}
+				   {set:$i = 0}
+				   {foreach:items = $photoData}
+					<div class="pic" id="a{$photoData[$i]['img_title']}">
+						{if:isset($this->photoRow[0]['focus_photo']) && $this->photoRow[0]['focus_photo'] == $photoData[$i]['img']}
+						<img name="img_name" class="current" onclick="focus_img('{$photoData[$i]['img']}',this);" style="margin: 5px; opacity:1" src="{webroot:}{$photoData[$i]['list_img']}" height="100" width="100">
+						{else:}
+						<img name="img_name" class="" onclick="focus_img('{$photoData[$i]['img']}',this);" style="margin: 5px; opacity:1" src="{webroot:}{$photoData[$i]['list_img']}" height="100" width="100">
+						{/if}
+						<input type="hidden" value="{$photoData[$i]['img']}" name="src[]" />
+						<a href="javascript:void(0);" onclick="focus_img('{$photoData[$i]['img']}',this);">设为封面</a>
+						<a href="javascript:void(0);" id="{$photoData[$i]['img_title']}" onclick="del_img(this.id);">删除</a>
+					</div>
+					{set:$i++}
+					{/foreach}
+				</div>
+			  </div>
+           </div>
+           <div class="buttons">
+               <div class="highlight"><input type="submit" class="ui-button ui-widget ui-state-default ui-corner-all" value="提交" /></div>
+           </div>
+      	</div>
+      	{else:}
+       <div class="fields">
+           <div class="field">
+           	{if:isset($id) && !empty($id)}
+           	<div class="label"><label>相册：</label></div>
+              <div class="input">
+              		{query:name = photo_category
+              				where = id eq $id 
+              			}
+              		<input type="hidden" name="category_id" value="{$item['id']}" />
+              		<input type="text" id="input-small" class="small" disabled="disabled" value="{$item['name']}" />
+              		{/query}
+              </div>
+           	{else:}
+              <div class="label"><label>选择相册：</label></div>
+              <div class="select">
+              	{echo:Article::showPhotoCat('category_id',$this->articleRow['category_id'],array('请选择相册'=>null))}
+              </div>
+              {/if}
+           </div>
+           <div class="field">
+              <div class="label">
+                 <label for="title">上传图片：</label>  
+              </div>
+			  <div class="input input-file">
+			  	<input type="hidden" name="photo_name" id="photo_name" value=""/>
+			  	<input type="hidden" name="focus_photo" id="focus_photo" value=""/>
+				<input type="hidden" name="thumb" id="thumb" value="php"/>
+		      	<input type="file" id="file" name="file" size="40" />
+			  </div>
+			  <div class="show_title">
+				<div id="show"></div>
+			  </div>
+			  <div class="show_box">
+				<div id="show_list"></div>
+			  </div>
+           </div>
+           <div class="buttons">
+               <div class="highlight"><input type="submit" class="ui-button ui-widget ui-state-default ui-corner-all" value="提交" /></div>
+           </div>
+      	</div>
+      	{/if}
+      </form>
+   </div>
+</div>

@@ -1,0 +1,19 @@
+@CHARSET "UTF-8";
+/*基本主体样式*/
+
+.m_t_10{margin-top:10px;}
+.m_l_10{margin-left:10px;}
+.m_r_10{margin-right:10px;}
+.m_b_10{margin-bottom:10px;}
+.p_t_10{padding-top:10px;}
+.p_l_10{padding-left:10px;}
+.p_r_10{padding-right:10px;}
+.P_b_10{padding-bottom:10px;}
+.height_10{height:10px;}
+.height_20{height:20px;}
+.f_left{float:left;}
+.f_right{float:right;}
+.in_block{display:inline-block;*display:inline;*zoom:1;}
+.in_block_hack{font-size:0;letter-spacing:-4px;}
+.absolute{position:absolute;}
+.relative{position:relative;}

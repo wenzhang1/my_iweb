@@ -1,0 +1,53 @@
+<div class="box">
+   <div class="title">
+      <h5>相册列表</h5>
+      <ul class="links">
+         <li><a href="{url:/tools/photo_catergory_edit}">添加新相册</a></li>
+      </ul>
+   </div>
+   <form action="{url:/tools/photo_category_del}" method="post">
+      <div class="table">
+         <table>
+            <col width="60%" />
+            <col />
+            <col width="5%" />
+            <thead>
+               <tr>
+                  <th class="left">相册名称</th>
+                  <th>操作</th>
+                  <th class="last">
+                     <input type="checkbox" class="checkall" />
+                  </th>
+               </tr>
+            </thead>
+            <tbody>
+               {set:$page= (isset($_GET['page'])&&(intval($_GET['page'])>0))?intval($_GET['page']):1;}
+               {query: name = photo_category
+                       order = id ASC
+                       page=$page
+                       pagesize=10
+               }
+               <tr>
+                  <td class="title"><b>{$item['name']}</b></td>
+                  <td class="operation">
+                  	 <a href="{url:/tools/photo_upload/id/$item[id]}">编辑/上传相册图片</a>
+                     <a href="{url:/tools/photo_catergory_edit/id/$item[id]}">更改相册名称</a>
+                     <a href='javascript:void(0)' onclick="delModel({link:'{url:/tools/photo_category_del/id/$item[id]}'});">删除相册</a>
+                  </td>
+                  <td class="last">
+                     <input type="checkbox" name='id[]' value="{$item['id']}" />
+                  </td>
+               </tr>
+               {/query}
+            </tbody>
+         </table>
+         <div class="pagination pagination-left">
+            <div class="results"><span>{$query->getTotalPage()}</span></div>
+            <ul class="pager">{$query->getPageBar()}</ul>
+         </div>
+         <div class="action">
+              <div class="button"><input type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-state-focus" value="批量删除" onclick="delModel();" /></div>
+         </div>
+      </div>
+   </form>
+</div>

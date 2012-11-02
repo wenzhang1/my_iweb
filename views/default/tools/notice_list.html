@@ -1,0 +1,55 @@
+<div class="box">
+   <div class="title">
+      <h5>公告列表</h5>
+      <ul class="links">
+         <li><a href="{url:/tools/notice_edit}">添加新公告</a></li>
+      </ul>
+   </div>
+   <form action="{url:/tools/notice_del}" method="post">
+      <div class="table">
+         <table>
+            <col width="45%" />
+            <col width="33%" />
+            <col />
+            <col width="5%" />
+            <thead>
+               <tr>
+                  <th class="left">文章标题</th>
+                  <th>创建时间</th>
+                  <th>操作</th>
+                  <th class="last">
+                     <input type="checkbox" class="checkall" />
+                  </th>
+               </tr>
+            </thead>
+            <tbody>
+               {set:$page= (isset($_GET['page'])&&(intval($_GET['page'])>0))?intval($_GET['page']):1;}
+               {query: name = notice
+                       order = create_time DESC
+                       page = $page
+                       pagesize = 10
+               }
+               <tr>
+                  <td class="title"><b>{$item['title']}</b></td>
+                  <td class="date">{$item['create_time']}</td>
+                  <td class="operation">
+                     <a href="{url:/tools/notice_edit/id/$item[id]}">编辑公告</a>
+                     <a href="javascript:void(0)" onclick="delModel({link:'{url:/tools/notice_del/id/$item[id]}'})">删除公告</a>
+                  </td>
+                  <td class="last">
+                     <input type="checkbox" name="id[]" value="{$item['id']}" />
+                  </td>
+               </tr>
+               {/query}
+            </tbody>
+         </table>
+         <div class="pagination pagination-left">
+            <div class="results"><span>{$query->getTotalPage()}</span></div>
+            <ul class="pager">{$query->getPageBar()}</ul>
+         </div>
+         <div class="action">
+           <div class="button"><input type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-state-focus" value="批量删除" onclick="delModel();" /></div>
+         </div>
+      </div>
+   </form>
+</div>
