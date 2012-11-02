@@ -1,0 +1,39 @@
+{js:kindeditor}
+<div class="box">
+   <div class="title">
+      <h5>公告管理->{if:isset($this->noticeRow['id'])}编辑{else:}添加{/if}公告</h5>
+   </div>
+   <div class="form">
+      <form action="{url:/tools/notice_edit_act}" method="post">
+         <div class="fields">
+           <div class="field">
+              <div class="label">
+                 <label for="title">公告标题：</label>  
+              </div>
+              <div class="input">
+                 <input type="hidden" name="id" value="{$this->noticeRow['id']}"/>
+                 <input type="text" class="small" name="title" id="title" value="{$this->noticeRow['title']}" />
+              </div>
+           </div>
+           <div class="field">
+              <div class="label label-textarea"><label for="text_content">内容：</label></div>
+              <div class="textarea textarea-editor">
+                 <textarea name="text_content" id="text_content" style="height:300px;width:600px">{echo:htmlspecialchars($this->noticeRow['content'])}</textarea>
+              </div>
+           </div>
+           <div class="buttons">
+               <div class="highlight"><input type="submit" class="ui-button ui-widget ui-state-default ui-corner-all" value="提交" /></div>
+           </div>
+         </div>
+      </form>
+   </div>
+</div>
+
+<script type='text/javascript'>
+   //装载编辑器
+   KE.show({
+      id : 'text_content',
+      imageUploadJson:'{url:/block/upload_img_from_editor}'
+   });
+
+</script>

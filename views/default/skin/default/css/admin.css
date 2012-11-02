@@ -1,0 +1,26 @@
+@CHARSET "UTF-8";
+/*后台样式*/
+.header a{
+	color:#f90;
+}
+.nav ul li{
+	display:inline-block;
+	*display:inline;
+	*zoom:1;
+	margin-right:15px;
+}
+.nav ul li a{
+	color:#f90;
+}
+.main{
+}
+.main .left{
+	width:200px;
+	vertical-align:top
+}
+.submenu li ul{
+	margin-left:15px;
+}
+.submenu li ul a{
+	color:#f90;
+}

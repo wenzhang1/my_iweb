@@ -1,0 +1,23 @@
+<div class="box">
+   <div class="title">
+      <h5>相册管理->{if:isset($this->photoCatRow['id'])}编辑{else:}添加{/if}相册</h5>
+   </div>
+   <div class="form">
+      <form action="{url:/tools/photo_category_edit_act}" method="post">
+         <div class="fields">
+           <div class="field">
+              <div class="label">
+                 <label for="name">相册名称：</label>  
+              </div>
+              <div class="input">
+                 <input type="hidden" name="id" value="{$this->photoCatRow['id']}"/>
+                 <input type="text" class="small" name="name" id="name" value="{$this->photoCatRow['name']}" />
+              </div>
+           </div>
+           <div class="buttons">
+               <div class="highlight"><input type="submit" class="ui-button ui-widget ui-state-default ui-corner-all" value="提交" /></div>
+           </div>
+      	</div>
+      </form>
+   </div>
+</div>
