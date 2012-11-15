@@ -145,7 +145,7 @@ class Tools extends IController
 			//节点移动
 			if($isMoveNode == true)
 			{
-				if($parentRow['path']!=null && strpos($parentRow['path'],','.$id.',')!==false)
+				if(isset($parentRow) && $parentRow['path']!=null && strpos($parentRow['path'],','.$id.',')!==false)
 				{
 					$this->catRow = array(
 						'parent_id' => $DataArray['parent_id'],
@@ -158,13 +158,13 @@ class Tools extends IController
 				else
 				{
 					//其子节点批量移动
-					$childObj = new IModel('article_category');
+					$childObj = new IModel('article_catergory');
 					$oldPath  = $catRow['path'];
 					$newPath  = $DataArray['path'];
-
+					
 					$where = 'path like "'.$oldPath.'%"';
 					$updateData = array(
-						'path' => "replace(path,'".$oldPath."','".$newPath."')",
+						'path' => "replace(pa1th,'".$oldPath."','".$newPath."')",
 					);
 					$childObj->setData($updateData);
 					$childObj->update($where,array('path'));
